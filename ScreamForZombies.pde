@@ -36,12 +36,11 @@ boolean play;
 void setup() {
   size(1280, 720, OPENGL);
   ellipseMode (CENTER);
-  //colorMode(HSB);
   smooth();
   ps = new ParticleSystem(new PVector(width/2, height/2, 30));
   minim = new Minim(this);
 
-  // get a line in from Minim, default bit depth is 16
+  // input audio dari minim
   in = minim.getLineIn(Minim.STEREO, 512);
 
   s = loadShape ("bot.svg");
@@ -58,13 +57,11 @@ void setup() {
 
   win = false;
   play = true;
-  
-  
 }
 
 void draw() {
   background(0);
-  
+
   if (!win) {
     drawScreamPower();
   }
@@ -76,9 +73,9 @@ void draw() {
       sum=sum+abs(in.right.get(i));
     }
 
-    // get average value of all samples
+    // nilai rata-rata volume audio
     averageAudioInput= sum/in.bufferSize();
-    // scale this higher and clamp no higher than 255, also turn to integer which anaologWrite requires
+    // mengatur ulang skala nilai dari input audio
     scaledAudioInput=int(constrain(averageAudioInput*2555, 0, 2000));
 
     if (scaledAudioInput > 700) {
@@ -86,19 +83,14 @@ void draw() {
       winCount++;
       drawWinTexts();
       timer.start();
-    } 
-    else {
+    } else {
       ps.addParticle();
       ps.run();
       health-=0.1;
     }
-  }
-
-  else if (health == 0) {
+  } else if (health == 0) {
     drawDeathMessage();
-  }
-
-  else if (winCount >= 7) {
+  } else if (winCount >= 7) {
     win = true;
     drawWinMessage();
   }
@@ -106,10 +98,9 @@ void draw() {
   println(scaledAudioInput);
 }
 
+// menampilkan bar
 void drawMeter() {
   pushMatrix();
-  //fill (0);
-  //rect(0,0,width,70);
   translate (0, 0, 2);
   fill (200, 0, 0);
   textAlign(LEFT);
@@ -123,13 +114,13 @@ void drawMeter() {
   stroke(255);
   rect (140, 5, map(health, 0, 1000, 0, width-190), 25);
 
-  //fill (22, 150, 245);
   fill (0, 114, 188);
   stroke(255);
   rect (140, 40, map(winCount, 0, 7, 0, width-190), 25);
   popMatrix();
 }
 
+// menampilkan pesan gambar jika menang
 void drawWinMessage() {
   pushMatrix();
   translate(0, 0, 3);
@@ -141,6 +132,15 @@ void drawWinMessage() {
   popMatrix();
 }
 
+// menampilkan pesan jika menang
+void drawWinTexts() {
+  fill (200, 0, 0, scaledAudioInput);
+  textSize(90);
+  textAlign(CENTER);
+  text("AAAAA!", width/2, height/2);
+}
+
+// menampilkan pesan jika kalah
 void drawDeathMessage() {
   pushMatrix();
   translate(0, 0, 3);
@@ -152,33 +152,22 @@ void drawDeathMessage() {
   popMatrix();
 }
 
-void drawWinTexts() {
-  //translate (0, 0, 1);
-  fill (200, 0, 0, scaledAudioInput);
-  textSize(90);
-  textAlign(CENTER);
-  text("AAAAA!", width/2, height/2);
-}
-
+// menampilkan visualisasi audio input
 void drawScreamPower() {
   pushMatrix();
   drawWinTexts();
   popMatrix();
-  //pushMatrix();
   for (int i = 0; i < scaledAudioInput; i+=10) {
     ellipseMode (CENTER);
     noFill();
-    //stroke(0, 120, 120, i);
     stroke (0, 114, 188, i);
     strokeWeight (3);
     ellipse (width/2, height/2, 20+2*i, 20+2*i);
-    //winTextFill = i;
   }
-  //popMatrix(); 
 }
 
+// untuk testing, menggunakan mouse untuk main
 void mousePressed() {
-  //for debugging purpose only
   ps.removeParticle();
   winCount++;
 }
@@ -193,14 +182,17 @@ void stop()
 }
 
 void keyPressed() {
-  /* try {
+  /* 
+   // untuk menampilkan screenshottry {
    saveFrame("screenshot.png");
    } 
    catch (Exception e) {
-   } */
+   } 
+  */
+  
+  // untuk reset game
   winCount = 0;
   health = 1000;
   play = true;
   timer.start();
 }
-
